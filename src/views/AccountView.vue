@@ -1,72 +1,104 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { useToastStore } from '@/stores/toast'
+import { copy } from '@/config/copy'
+import SectionHead from '@/components/store/SectionHead.vue'
 
 const router = useRouter()
 const userStore = useUserStore()
-const toast = useToastStore()
+const t = copy.account
+
+const rows = computed(() => {
+  const u = userStore.user
+  if (!u) return []
+  return [
+    { label: t.fields.name, value: u.name },
+    { label: t.fields.email, value: u.email },
+    { label: t.fields.phone, value: u.phone },
+    { label: t.fields.company, value: u.company },
+  ].filter((r) => r.value)
+})
 
 function logout() {
   userStore.clear()
-  toast.info('Sesión cerrada')
   router.replace('/')
 }
 </script>
 
 <template>
   <section class="account">
-    <p class="account__eyebrow">Mi cuenta</p>
-    <h1 class="account__title">{{ userStore.user?.name || userStore.user?.email }}</h1>
+    <SectionHead as="h1" :eyebrow="t.eyebrow" :title="userStore.user?.name || t.eyebrow" />
+
+    <p v-if="userStore.isDistributor" class="account__notice">
+      <i class="fa-solid fa-tags"></i> {{ t.distributorNotice }}
+    </p>
+    <p v-else-if="userStore.isAdmin" class="account__notice">
+      <i class="fa-solid fa-shield-halved"></i> {{ t.adminNotice }}
+    </p>
 
     <dl class="account__data">
-      <div>
-        <dt>Correo</dt>
-        <dd>{{ userStore.user?.email }}</dd>
-      </div>
-      <div>
-        <dt>Tipo de cuenta</dt>
-        <dd>{{ userStore.user?.accountType }}</dd>
+      <div v-for="r in rows" :key="r.label">
+        <dt>{{ r.label }}</dt>
+        <dd>{{ r.value }}</dd>
       </div>
     </dl>
 
-    <button class="btn btn--ghost" @click="logout">
-      <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
-    </button>
+    <div class="account__actions">
+      <RouterLink v-if="userStore.isAdmin" to="/admin" class="btn btn--dark btn--sport">{{ t.adminCta }}</RouterLink>
+      <RouterLink to="/tienda" class="btn btn--primary btn--sport">{{ t.shopCta }}</RouterLink>
+      <button type="button" class="btn btn--ghost btn--sport" @click="logout">
+        <i class="fa-solid fa-right-from-bracket"></i> {{ t.logout }}
+      </button>
+    </div>
   </section>
 </template>
 
 <style scoped lang="scss">
 .account {
   @include container(720px);
-  @include flex(column, flex-start, flex-start, 1rem);
-  padding-block: $space-xl;
+  padding-block: 2rem $space-xl;
+  @include flex(column, stretch, flex-start, 1.5rem);
 
-  &__eyebrow {
-    @include eyebrow;
-  }
+  &__notice {
+    background: $ink;
+    color: $paper;
+    padding: 1rem 1.2rem;
+    border-left: 6px solid $accent;
 
-  &__title {
-    @include display($display-sm, 600);
+    i {
+      color: $accent;
+      margin-right: 0.4rem;
+    }
   }
 
   &__data {
-    @include card;
-    @include flex-cards(200px, 1rem);
-    width: 100%;
-    padding: 1.4rem 1.6rem;
-    margin-block: 0.6rem 1rem;
+    border-top: 2px solid $ink;
+
+    div {
+      @include flex(row, baseline, space-between, 1rem);
+      padding: 0.75rem 0;
+      border-bottom: 1px solid $line;
+    }
 
     dt {
-      @include eyebrow;
-      font-size: 0.62rem;
-      color: $ink-muted;
+      font-family: $font-condensed;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: $ink-soft;
     }
 
     dd {
-      font-size: $text-base;
-      margin-top: 0.2rem;
+      font-weight: 600;
+      text-align: right;
+      overflow-wrap: anywhere;
     }
+  }
+
+  &__actions {
+    @include flex(row, center, flex-start, 0.6rem);
+    flex-wrap: wrap;
   }
 }
 </style>
