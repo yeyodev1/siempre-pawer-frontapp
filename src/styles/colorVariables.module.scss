@@ -3,22 +3,26 @@
 @use 'sass:color';
 
 // Acento de marca
-$accent: #e30613;
+$accent: #f5b800; // dorado del rayo PAWER
 $accent-deep: color.adjust($accent, $lightness: -12%);
 $accent-soft: color.mix($accent, #ffffff, 14%);
 
 // Superficies
-$paper: #fdfcfa; // fondo base
+$paper: #ffffff; // fondo base
 $surface: #ffffff; // superficies elevadas
-$sand: #f1ece6; // bloques suaves
-$line: #e7e1d9; // bordes
+$sand: #f4f4f2; // bloques suaves
+$line: #e4e4e0; // bordes
 
 // Texto
-$ink: #191423; // texto principal
-$ink-soft: #4a4552; // texto secundario
-$ink-muted: #8a8590; // terciario / labels
+$ink: #0e0e0e; // texto principal y negro de marca
+$ink-soft: #444444; // texto secundario
+$ink-muted: #8a8a85; // terciario / labels
 
-$overlay: rgba(#100c14, 0.55);
+$overlay: rgba(#000000, 0.6);
+
+// El dorado no tiene contraste sobre blanco: texto sobre acento siempre en tinta.
+$on-accent: #0e0e0e;
+$night: #0b0b0b; // secciones oscuras
 
 // Estados
 $success: #3bb77e;
