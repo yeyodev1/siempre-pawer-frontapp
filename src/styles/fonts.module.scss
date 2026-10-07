@@ -1,7 +1,9 @@
 // Solo variables. Las fuentes se cargan con <link> en index.html: este archivo
 // se inyecta en cada SFC vía vite.config.ts, así que no debe emitir CSS.
+// La marca usa Gotham (licencia paga): Barlow es el reemplazo libre más cercano.
 
-$font-display: 'Fraunces', Georgia, serif;
-$font-principal: 'Montserrat', system-ui, sans-serif;
-$font-secondary: $font-principal;
+$font-display: 'Bebas Neue', 'Barlow Condensed', Impact, sans-serif;
+$font-principal: 'Barlow', system-ui, sans-serif;
+$font-condensed: 'Barlow Condensed', 'Barlow', sans-serif;
+$font-secondary: $font-condensed;
 $font-body: $font-principal;
