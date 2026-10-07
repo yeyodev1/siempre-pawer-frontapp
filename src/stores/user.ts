@@ -13,6 +13,7 @@ export const useUserStore = defineStore('user', {
   getters: {
     isAuthenticated: (s) => Boolean(s.user),
     isAdmin: (s) => s.user?.accountType === 'admin',
+    isDistributor: (s) => s.user?.accountType === 'distributor',
     hasToken: () => Boolean(localStorage.getItem(TOKEN_KEY)),
   },
 
