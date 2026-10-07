@@ -3,7 +3,7 @@ import type { OrderEditForm } from '@/composables/useAdminOrderDetail'
 import { statusLabels, statusOrder } from '@/composables/useAdminFormat'
 
 const form = defineModel<OrderEditForm>({ required: true })
-defineProps<{ saving: boolean; dirty: boolean; statusChanged: boolean; whatsappUrl: string }>()
+defineProps<{ saving: boolean; dirty: boolean; statusChanged: boolean; whatsappUrl: string; locked: boolean }>()
 const emit = defineEmits<{ save: []; suggest: [] }>()
 </script>
 
@@ -13,12 +13,18 @@ const emit = defineEmits<{ save: []; suggest: [] }>()
     <form class="adm-stack" @submit.prevent="emit('save')">
       <div class="adm-field">
         <label for="order-status">Estado</label>
-        <select id="order-status" v-model="form.status">
+        <select id="order-status" v-model="form.status" :disabled="locked">
           <option v-for="s in statusOrder" :key="s" :value="s">{{ statusLabels[s] }}</option>
         </select>
+        <small v-if="locked">Un pedido cancelado no se puede reabrir.</small>
         <small v-if="statusChanged" class="actions__warn">
           <i class="fa-solid fa-envelope"></i> Al guardar se enviará un correo al cliente con el nuevo estado.
         </small>
+      </div>
+
+      <div v-if="statusChanged" class="adm-field">
+        <label for="order-note">Comentario del cambio (opcional)</label>
+        <input id="order-note" v-model="form.note" placeholder="Queda en el historial del pedido" />
       </div>
 
       <template v-if="form.status === 'shipped' || form.trackingNumber">
