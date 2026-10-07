@@ -37,7 +37,7 @@ onMounted(load)
     </div>
 
     <div class="adm-toolbar">
-      <input v-model="search" type="search" placeholder="Buscar por número, nombre, correo o teléfono" aria-label="Buscar pedidos" />
+      <input v-model="search" type="search" placeholder="Buscar pedido, cliente o teléfono" aria-label="Buscar pedidos" />
     </div>
 
     <div class="adm-card orders__card">
