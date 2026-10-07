@@ -28,6 +28,8 @@ export interface AdminOrderPatch {
   trackingNumber?: string
   trackingUrl?: string
   notes?: string
+  /** Comentario que queda en el historial junto al cambio de estado. */
+  note?: string
 }
 
 export type ProductPayload = Omit<Product, '_id' | 'related' | 'createdAt' | 'category'> & {
