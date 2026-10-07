@@ -4,14 +4,22 @@ import { copy } from '@/config/copy'
 import { money } from '@/utils/format'
 import { sortedTiers } from '@/utils/pricing'
 import { useSettingsStore } from '@/stores/settings'
+import { usePaymentMethod } from '@/composables/usePaymentMethod'
 import type { PaymentMethod, Product } from '@/types'
 
 const props = defineProps<{ product: Product; isDistributor: boolean; selected: PaymentMethod }>()
 
 const settings = useSettingsStore()
+const { bestMethod } = usePaymentMethod()
 
 const showDistributor = computed(() => props.isDistributor && Boolean(props.product.distributorPrice))
-const tiers = computed(() => sortedTiers(props.product.volumeTiers))
+// El tier está referido a tarjeta; se muestra en el método más barato disponible.
+const tiers = computed(() =>
+  sortedTiers(props.product.volumeTiers).map((t) => ({
+    minQty: t.minQty,
+    price: t.unitPrice + props.product.prices[bestMethod.value] - props.product.prices.card,
+  })),
+)
 
 // Se muestran los tres precios aunque un método esté apagado, salvo que el
 // API ya haya dicho que no existe: así nunca se ofrece algo que no se puede pagar.
@@ -23,6 +31,12 @@ const rows = computed(() => {
     { key: 'cod', label: copy.product.priceCod, on: s.codEnabled },
   ]
   return all.filter((r) => r.on)
+})
+
+// Solo se marca "mejor precio" si de verdad es menor que el siguiente método.
+const bestIsCheaper = computed(() => {
+  const [first, second] = rows.value
+  return Boolean(first && second && props.product.prices[first.key] < props.product.prices[second.key])
 })
 </script>
 
@@ -39,11 +53,11 @@ const rows = computed(() => {
           v-for="(row, i) in rows"
           :key="row.key"
           class="pricing__row"
-          :class="{ 'pricing__row--best': i === 0 && row.key === 'card', 'pricing__row--selected': row.key === selected }"
+          :class="{ 'pricing__row--best': i === 0, 'pricing__row--selected': row.key === selected }"
         >
           <span class="pricing__label">
             {{ row.label }}
-            <em v-if="row.key === 'card'">{{ copy.product.bestPrice }}</em>
+            <em v-if="i === 0 && bestIsCheaper">{{ copy.product.bestPrice }}</em>
           </span>
           <strong class="pricing__value">{{ money(product.prices[row.key]) }}</strong>
         </div>
@@ -55,8 +69,8 @@ const rows = computed(() => {
       <div v-if="tiers.length" class="pricing__tiers">
         <p class="pricing__tiers-title"><i class="fa-solid fa-layer-group"></i> {{ copy.product.tiersTitle }}</p>
         <p v-for="t in tiers" :key="t.minQty" class="pricing__tier">
-          {{ copy.product.tierLine(t.minQty, money(t.unitPrice)) }}
-          <small>({{ copy.product.priceCard.toLowerCase() }})</small>
+          {{ copy.product.tierLine(t.minQty, money(t.price)) }}
+          <small>({{ copy.product.fromLabel[bestMethod] }})</small>
         </p>
       </div>
     </template>
