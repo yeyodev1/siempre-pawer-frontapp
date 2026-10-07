@@ -1,32 +1,52 @@
+<script setup lang="ts">
+import { copy } from '@/config/copy'
+
+const t = copy.notFound
+</script>
+
 <template>
-  <section class="not-found">
-    <p class="not-found__code">404</p>
-    <h1 class="not-found__title">Esta página no existe</h1>
-    <p class="not-found__text">Puede que el enlace esté mal escrito o que la página se haya movido.</p>
-    <RouterLink to="/" class="btn btn--primary">Volver al inicio</RouterLink>
+  <section class="nf">
+    <p class="nf__code" aria-hidden="true">{{ t.code }}</p>
+    <h1 class="nf__title">{{ t.title }}</h1>
+    <p class="nf__text">{{ t.text }}</p>
+    <div class="nf__actions">
+      <RouterLink to="/" class="btn btn--dark btn--sport btn--lg">{{ t.cta }}</RouterLink>
+      <RouterLink to="/tienda" class="btn btn--primary btn--sport btn--lg">{{ copy.shop.title }}</RouterLink>
+    </div>
   </section>
 </template>
 
 <style scoped lang="scss">
-.not-found {
+.nf {
   @include container(640px);
-  @include flex(column, center, center, 0.8rem);
   flex: 1;
+  @include flex(column, center, center, 0.9rem);
   text-align: center;
-  padding-block: $space-section;
+  padding-block: $space-xl;
 
   &__code {
-    @include eyebrow;
-    font-size: $text-base;
+    font-family: $font-display;
+    font-size: clamp(7rem, 30vw, 13rem);
+    line-height: 0.8;
+    color: $accent;
+    -webkit-text-stroke: 2px $ink;
   }
 
   &__title {
-    @include display($display-md);
+    font-family: $font-display;
+    font-weight: 400;
+    font-size: $display-md;
+    text-transform: uppercase;
   }
 
   &__text {
     color: $ink-soft;
-    margin-bottom: 0.6rem;
+  }
+
+  &__actions {
+    @include flex(row, center, center, 0.75rem);
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
   }
 }
 </style>
