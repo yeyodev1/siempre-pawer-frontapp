@@ -128,9 +128,10 @@ label {
   border-radius: $radius-pill;
   @include transition;
 
+  // El dorado no da contraste con blanco: el texto sobre acento va en tinta.
   &--primary {
     background: $accent;
-    color: $surface;
+    color: $on-accent;
 
     &:hover {
       background: $accent-deep;
@@ -161,6 +162,46 @@ label {
   &--danger {
     background: $danger;
     color: $surface;
+  }
+
+  &--light {
+    border: 1px solid rgba($paper, 0.5);
+    color: $paper;
+
+    &:hover {
+      background: $paper;
+      color: $ink;
+    }
+  }
+
+  &--whatsapp {
+    background: #1fa855;
+    color: $paper;
+
+    &:hover {
+      background: #178a45;
+      transform: translateY(-1px);
+    }
+  }
+
+  // Botones de marca: rectos y en condensada, como un dorsal.
+  &--sport {
+    font-family: $font-condensed;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 4px;
+  }
+
+  &--lg {
+    padding: 1.05rem 2.2rem;
+    font-size: 1.05rem;
+  }
+
+  &--block {
+    display: flex;
+    width: 100%;
   }
 
   &:disabled {
@@ -218,5 +259,26 @@ label {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+// Cajita de Pagos de Payphone: el interior es suyo; solo lo adaptamos al
+// ancho del contenedor y a la tipografía de la marca, con moderación.
+#pp-button {
+  width: 100%;
+  min-height: 120px;
+  font-family: $font-principal;
+
+  > * {
+    max-width: 100% !important;
+  }
+
+  iframe {
+    width: 100% !important;
+    border-radius: $radius-sm;
+  }
+
+  button {
+    border-radius: 4px !important;
   }
 }
