@@ -3,18 +3,18 @@ import { computed } from 'vue'
 import { copy } from '@/config/copy'
 import { money } from '@/utils/format'
 import { unitPrice } from '@/utils/pricing'
-import { useUserStore } from '@/stores/user'
+import { usePaymentMethod } from '@/composables/usePaymentMethod'
 import { useAddToCart } from '@/composables/useAddToCart'
 import type { Product } from '@/types'
 
 const props = defineProps<{ product: Product }>()
 
-const user = useUserStore()
+const { bestMethod, isDistributor } = usePaymentMethod()
 const { add } = useAddToCart()
 
 const soldOut = computed(() => props.product.stock <= 0)
-const isDistributorPrice = computed(() => user.isDistributor && Boolean(props.product.distributorPrice))
-const price = computed(() => unitPrice(props.product, 'card', 1, user.isDistributor))
+const isDistributorPrice = computed(() => isDistributor.value && Boolean(props.product.distributorPrice))
+const price = computed(() => unitPrice(props.product, bestMethod.value, 1, isDistributor.value))
 const image = computed(() => props.product.images?.[0] || '')
 const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
 </script>
@@ -35,7 +35,7 @@ const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
       <div class="card__row">
         <div class="card__price">
           <strong>{{ money(price) }}</strong>
-          <span>{{ isDistributorPrice ? copy.product.distributorLabel : copy.product.cardLabel }}</span>
+          <span>{{ isDistributorPrice ? copy.product.distributorLabel : copy.product.fromLabel[bestMethod] }}</span>
         </div>
         <button
           class="card__add"
