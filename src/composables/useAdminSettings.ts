@@ -35,9 +35,19 @@ export function useAdminSettings() {
 
   async function save() {
     // payphoneEnabled depende de las credenciales del servidor: no se edita desde aquí.
-    const { payphoneEnabled, ...payload } = form.value
-    payload.bankAccounts = payload.bankAccounts.filter((b) => b.bank.trim() && b.number.trim())
-    payload.whatsapp = payload.whatsapp.replace(/\s/g, '')
+    // Solo los campos editables: el documento trae _id, key y fechas que no se deben reenviar.
+    const f = form.value
+    const payphoneEnabled = f.payphoneEnabled
+    const payload = {
+      shippingCost: f.shippingCost,
+      freeShippingFrom: f.freeShippingFrom,
+      pickupAddress: f.pickupAddress,
+      bankAccounts: f.bankAccounts.filter((b) => b.bank.trim() && b.number.trim()),
+      whatsapp: f.whatsapp.replace(/\s/g, ''),
+      announcement: f.announcement,
+      codEnabled: f.codEnabled,
+      transferEnabled: f.transferEnabled,
+    }
     saving.value = true
     try {
       const saved = await adminService.updateSettings(payload)
