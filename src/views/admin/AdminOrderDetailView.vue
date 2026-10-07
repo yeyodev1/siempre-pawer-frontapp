@@ -52,6 +52,7 @@ onMounted(load)
             :dirty="dirty"
             :status-changed="statusChanged"
             :whatsapp-url="whatsappUrl"
+            :locked="order.status === 'cancelled'"
             @save="requestSave"
             @suggest="suggestTrackingUrl"
           />
