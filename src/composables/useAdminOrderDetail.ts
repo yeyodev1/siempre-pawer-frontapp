@@ -9,6 +9,7 @@ export interface OrderEditForm {
   trackingNumber: string
   trackingUrl: string
   notes: string
+  note: string
 }
 
 // Link de rastreo por defecto: el dueño solo pega la guía y el link se arma solo.
@@ -20,7 +21,13 @@ export function useAdminOrderDetail(id: string) {
   const loading = ref(true)
   const saving = ref(false)
   const confirmOpen = ref(false)
-  const form = ref<OrderEditForm>({ status: 'pending_payment', trackingNumber: '', trackingUrl: '', notes: '' })
+  const form = ref<OrderEditForm>({
+    status: 'pending_payment',
+    trackingNumber: '',
+    trackingUrl: '',
+    notes: '',
+    note: '',
+  })
 
   function fillForm(o: Order) {
     form.value = {
@@ -28,6 +35,7 @@ export function useAdminOrderDetail(id: string) {
       trackingNumber: o.trackingNumber || '',
       trackingUrl: o.trackingUrl || '',
       notes: o.notes || '',
+      note: '',
     }
   }
 
@@ -79,7 +87,10 @@ export function useAdminOrderDetail(id: string) {
       trackingUrl: form.value.trackingUrl.trim(),
       notes: form.value.notes,
     }
-    if (statusChanged.value) patch.status = form.value.status
+    if (statusChanged.value) {
+      patch.status = form.value.status
+      if (form.value.note.trim()) patch.note = form.value.note.trim()
+    }
     saving.value = true
     try {
       order.value = await adminService.updateOrder(order.value._id, patch)
