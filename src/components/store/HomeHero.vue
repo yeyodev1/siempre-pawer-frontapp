@@ -2,9 +2,11 @@
 import { site } from '@/config/site'
 import { copy } from '@/config/copy'
 import { money } from '@/utils/format'
+import { usePaymentMethod } from '@/composables/usePaymentMethod'
 import type { Product } from '@/types'
 
 defineProps<{ product?: Product | null }>()
+const { bestMethod } = usePaymentMethod()
 </script>
 
 <template>
@@ -30,7 +32,7 @@ defineProps<{ product?: Product | null }>()
           <img :src="product.images[0]" :alt="product.name" fetchpriority="high" />
           <span class="hero__tag">
             <small>{{ product.name }}</small>
-            <strong>{{ money(product.prices.card) }}</strong>
+            <strong>{{ money(product.prices[bestMethod]) }}</strong>
           </span>
         </RouterLink>
         <div v-else class="hero__product hero__product--empty">
@@ -128,9 +130,10 @@ defineProps<{ product?: Product | null }>()
     @include flex(row, center, center);
     box-shadow: 0 40px 80px rgba(#000, 0.45);
 
+    // 68%: la diagonal de la foto (cuadrada, con fondo blanco) cabe dentro del círculo.
     img {
-      width: 82%;
-      height: 82%;
+      width: 68%;
+      height: 68%;
       object-fit: contain;
       transition: transform 0.6s $ease;
     }
