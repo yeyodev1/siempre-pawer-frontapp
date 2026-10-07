@@ -17,21 +17,39 @@ defineProps<{ categories: Category[] }>()
 
 <style scoped lang="scss">
 .tiles {
-  @include flex-cards(150px, 0.75rem);
-
-  @include from('md') {
-    @include flex-cards(220px, 1rem);
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
 }
 
 .tile {
   position: relative;
-  aspect-ratio: 4 / 5;
+  // Columnas fijas: con flex-cards la última categoría se estiraba a lo ancho.
+  flex: 0 0 calc((100% - 0.75rem) / 2);
+  min-width: 0;
+  aspect-ratio: 1;
   background: $ink;
+
+  @include from('md') {
+    flex: 1 1 0;
+    aspect-ratio: 3 / 4;
+  }
   overflow: hidden;
   @include flex(column, flex-start, flex-end);
   padding: 1rem;
   color: $paper;
+
+  // Sin foto de categoría queda el rayo de marca como textura.
+  &::before {
+    content: '';
+    position: absolute;
+    top: -10%;
+    bottom: -10%;
+    right: 12%;
+    width: 22%;
+    background: rgba($accent, 0.16);
+    transform: skewX(-18deg);
+  }
 
   &__img {
     position: absolute;
