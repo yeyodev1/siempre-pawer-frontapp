@@ -1,0 +1,285 @@
+// Estilos compartidos del panel. Se importa una sola vez desde AdminLayout.vue,
+// así que solo llega en el chunk del admin y nunca a la tienda pública.
+// Todo cuelga de .adm para no chocar con las clases de la tienda.
+
+.adm {
+  .adm-btn {
+    @include flex(row, center, center, 0.45rem);
+    font-family: $font-body;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.7rem 1.2rem;
+    min-height: 42px;
+    border-radius: $radius-pill;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    @include transition;
+    @include focus-ring;
+
+    &--primary {
+      background: $accent;
+      color: $on-accent;
+
+      &:hover {
+        background: $accent-deep;
+      }
+    }
+
+    &--dark {
+      background: $ink;
+      color: $surface;
+
+      &:hover {
+        background: #2a2a2a;
+      }
+    }
+
+    &--ghost {
+      border-color: $line;
+      background: $surface;
+      color: $ink;
+
+      &:hover {
+        border-color: $ink;
+      }
+    }
+
+    &--danger {
+      border-color: rgba($danger, 0.35);
+      color: $danger;
+      background: $surface;
+
+      &:hover {
+        background: $danger-bg;
+      }
+    }
+
+    &--whatsapp {
+      background: #25d366;
+      color: #06331a;
+    }
+
+    &--sm {
+      padding: 0.45rem 0.85rem;
+      min-height: 36px;
+      font-size: 0.8rem;
+    }
+
+    &--icon {
+      padding: 0;
+      width: 38px;
+      min-height: 38px;
+      flex: 0 0 38px;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      pointer-events: none;
+    }
+  }
+
+  .adm-card {
+    @include card;
+    border-radius: $radius-sm;
+    padding: 1.1rem;
+
+    @include from('md') {
+      padding: 1.4rem;
+    }
+
+    &__title {
+      @include flex(row, center, space-between, 0.5rem);
+      font-family: $font-condensed;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.9rem;
+
+      i {
+        color: $accent-deep;
+      }
+    }
+  }
+
+  .adm-stack {
+    @include flex(column, stretch, flex-start, 1rem);
+  }
+
+  .adm-fields {
+    @include flex-cards(220px, 0.9rem);
+  }
+
+  .adm-field {
+    @include flex(column, stretch, flex-start, 0);
+
+    label {
+      font-weight: 600;
+    }
+
+    small {
+      color: $ink-muted;
+      font-size: $text-xs;
+      margin-top: 0.3rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+  }
+
+  .adm-toolbar {
+    @include flex(row, center, flex-start, 0.6rem);
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+
+    input,
+    select {
+      flex: 1 1 200px;
+      width: auto;
+    }
+  }
+
+  // Tabla en desktop, tarjetas en móvil. Cada celda trae data-label para el móvil.
+  .adm-table {
+    @include flex(column, stretch, flex-start, 0.6rem);
+
+    &__head {
+      display: none;
+    }
+
+    &__row {
+      @include card;
+      border-radius: $radius-sm;
+      @include flex(row, center, flex-start, 0.4rem 0.9rem);
+      flex-wrap: wrap;
+      padding: 0.9rem 1rem;
+      @include transition(border-color);
+
+      &--link {
+        cursor: pointer;
+
+        &:hover {
+          border-color: $ink;
+        }
+      }
+    }
+
+    &__cell {
+      min-width: 0;
+      font-size: 0.9rem;
+
+      &[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: $ink-muted;
+      }
+
+      &--main {
+        flex: 1 1 100%;
+        font-weight: 600;
+      }
+
+      &--grow {
+        flex: 1 1 0;
+      }
+    }
+
+    @include from('lg') {
+      gap: 0;
+
+      &__head,
+      &__row {
+        @include flex(row, center, flex-start, 1rem);
+        flex-wrap: nowrap;
+        border-radius: 0;
+        border-width: 0 0 1px;
+        padding: 0.75rem 1rem;
+      }
+
+      &__head {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: $ink-muted;
+        border-bottom: 1px solid $line;
+      }
+
+      &__row:hover {
+        background: $sand;
+      }
+
+      &__cell {
+        &[data-label]::before {
+          display: none;
+        }
+
+        &--main {
+          flex: 1 1 0;
+        }
+      }
+    }
+  }
+
+  .adm-chip {
+    @include flex(row, center, center, 0.35rem);
+    display: inline-flex;
+    padding: 0.2rem 0.65rem;
+    border-radius: $radius-pill;
+    font-size: 0.74rem;
+    font-weight: 600;
+    white-space: nowrap;
+    background: $sand;
+    color: $ink-soft;
+
+    &--on {
+      background: $success-bg;
+      color: darken($success, 12%);
+    }
+
+    &--gold {
+      background: $accent-soft;
+      color: darken($accent-deep, 8%);
+    }
+  }
+
+  .adm-empty {
+    @include flex(column, center, center, 0.5rem);
+    text-align: center;
+    color: $ink-muted;
+    padding: 2.5rem 1rem;
+
+    i {
+      font-size: 1.8rem;
+      color: $line;
+    }
+  }
+
+  .adm-loading {
+    @include flex(row, center, center, 0.5rem);
+    color: $ink-muted;
+    padding: 2.5rem 1rem;
+  }
+
+  .adm-muted {
+    color: $ink-muted;
+    font-size: $text-sm;
+  }
+
+  .adm-thumb {
+    width: 48px;
+    height: 48px;
+    flex: 0 0 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: $sand;
+    border: 1px solid $line;
+  }
+}
