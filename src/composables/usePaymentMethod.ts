@@ -23,9 +23,12 @@ export function usePaymentMethod() {
     methods.value.includes(cart.paymentMethod) ? cart.paymentMethod : methods.value[0] || 'transfer',
   )
 
+  // Los métodos vienen ordenados de menor a mayor precio: el primero es el "desde".
+  const bestMethod = computed<PaymentMethod>(() => methods.value[0] || 'transfer')
+
   function select(next: PaymentMethod) {
     cart.setPaymentMethod(next)
   }
 
-  return { methods, method, select, isDistributor }
+  return { methods, method, bestMethod, select, isDistributor }
 }
