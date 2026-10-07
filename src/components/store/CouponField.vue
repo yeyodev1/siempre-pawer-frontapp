@@ -21,7 +21,7 @@ const t = copy.checkout
       <input
         id="co-coupon"
         v-model="couponInput"
-        :placeholder="`${t.coupon}: ${t.couponPlaceholder}`"
+        :placeholder="t.couponPlaceholder"
         autocapitalize="characters"
         @keydown.enter.prevent="emit('apply')"
       />
