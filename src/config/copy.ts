@@ -31,6 +31,11 @@ export const copy = {
   },
   product: {
     cardLabel: 'con tarjeta',
+    fromLabel: {
+      card: 'con tarjeta',
+      transfer: 'con transferencia',
+      cod: 'contra entrega',
+    },
     soldOut: 'Agotado',
     lowStock: 'Últimas unidades',
     inStock: 'En stock',
@@ -92,7 +97,7 @@ export const copy = {
     invoiceEmail: 'Correo para la factura',
     invoiceAddress: 'Dirección de facturación',
     coupon: 'Cupón de descuento',
-    couponPlaceholder: 'Código',
+    couponPlaceholder: 'Código de cupón',
     couponApply: 'Aplicar',
     couponRemove: 'Quitar cupón',
     couponApplied: (code: string, pct: number) => `Cupón ${code} aplicado: ${pct}% de descuento`,
