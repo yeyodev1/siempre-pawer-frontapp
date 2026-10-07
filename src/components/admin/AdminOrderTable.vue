@@ -94,20 +94,26 @@ function open(order: Order) {
   }
 
   .col-num {
-    flex: 0 0 150px;
+    flex: 0 0 125px;
   }
 
   .col-pay {
-    flex: 0 0 150px;
+    flex: 0 0 135px;
   }
 
   .col-status {
-    flex: 0 0 140px;
+    flex: 0 0 130px;
   }
 
   .col-total {
-    flex: 0 0 100px;
+    flex: 0 0 90px;
     text-align: right;
+  }
+
+  // La cabecera hereda el estilo de la tabla, no el de la celda de pago.
+  .adm-table__head .col-pay {
+    font-size: inherit;
+    color: inherit;
   }
 }
 </style>
