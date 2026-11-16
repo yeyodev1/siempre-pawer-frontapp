@@ -3,6 +3,7 @@ import type { Category, Paginated, Product } from '@/types'
 
 export interface ProductQuery {
   category?: string
+  sub?: string
   search?: string
   featured?: boolean
   sort?: 'newest' | 'price_asc' | 'price_desc'

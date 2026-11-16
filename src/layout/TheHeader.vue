@@ -52,14 +52,11 @@ onMounted(() => {
       </button>
 
       <RouterLink to="/" class="header__logo" :aria-label="site.name">
-        <img v-if="!logoFailed" src="/logo.svg" :alt="site.name" @error="logoFailed = true" />
+        <img v-if="!logoFailed" src="/logo-white.svg" :alt="site.name" @error="logoFailed = true" />
         <span v-else>{{ site.name }}</span>
       </RouterLink>
 
       <nav class="header__nav" :class="{ 'header__nav--open': mobileOpen }">
-        <div class="header__mobile-search">
-          <HeaderSearch @done="mobileOpen = false" />
-        </div>
         <RouterLink v-for="link in site.nav" :key="link.to" :to="link.to" class="header__link">
           {{ link.label }}
         </RouterLink>
@@ -72,11 +69,22 @@ onMounted(() => {
         <div class="header__search">
           <HeaderSearch />
         </div>
+        <RouterLink
+          :to="userStore.isAdmin ? '/admin' : '/cuenta'"
+          class="header__icon"
+          :aria-label="userStore.isAdmin ? 'Panel' : 'Mi cuenta'"
+        >
+          <i class="fa-solid fa-user"></i>
+        </RouterLink>
         <RouterLink to="/carrito" class="header__icon header__cart" :aria-label="`Carrito, ${cart.count} productos`">
           <i class="fa-solid fa-bag-shopping"></i>
           <span v-if="cart.count" class="header__badge">{{ cart.count > 99 ? '99+' : cart.count }}</span>
         </RouterLink>
       </div>
+    </div>
+    <!-- En el celular la búsqueda va siempre a la vista, como en las apps de delivery. -->
+    <div class="header__searchbar">
+      <HeaderSearch />
     </div>
   </header>
 </template>
@@ -86,8 +94,8 @@ onMounted(() => {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: $paper;
-  border-bottom: 1px solid $line;
+  background: $night;
+  color: $paper;
 
   &__inner {
     @include container(1280px);
@@ -109,7 +117,7 @@ onMounted(() => {
       font-size: 1.7rem;
       letter-spacing: 0.02em;
       text-transform: uppercase;
-      color: $ink;
+      color: $paper;
     }
 
     @include until('lg') {
@@ -130,9 +138,11 @@ onMounted(() => {
     &--open {
       @include until('lg') {
         @include flex(column, stretch, flex-start, 0);
-        position: fixed;
-        inset: 0;
-        top: 98px;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 100%;
+        height: calc(100dvh - 100%);
         background: $paper;
         padding: 1.25rem;
         z-index: 90;
@@ -141,8 +151,9 @@ onMounted(() => {
     }
   }
 
-  &__mobile-search {
-    margin-bottom: 1rem;
+  &__searchbar {
+    @include container(1280px);
+    padding-bottom: 0.75rem;
 
     @include from('lg') {
       display: none;
@@ -161,6 +172,7 @@ onMounted(() => {
     position: relative;
 
     @include from('lg') {
+      color: $paper;
       font-size: 0.95rem;
       padding: 0.3rem 0;
       border: none;
@@ -208,13 +220,13 @@ onMounted(() => {
     width: 2.6rem;
     height: 2.6rem;
     font-size: 1.2rem;
-    color: $ink;
+    color: $paper;
     border-radius: 50%;
     @include flex(row, center, center);
     @include transition(background);
 
     &:hover {
-      background: $sand;
+      background: rgba($paper, 0.12);
     }
   }
 

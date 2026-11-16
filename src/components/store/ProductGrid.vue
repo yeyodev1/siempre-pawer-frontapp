@@ -2,11 +2,12 @@
 import ProductCard from './ProductCard.vue'
 import type { Product } from '@/types'
 
-defineProps<{ products: Product[] }>()
+// dense: 3 columnas en el celular, para vitrinas cortas como "Los más vendidos".
+defineProps<{ products: Product[]; dense?: boolean }>()
 </script>
 
 <template>
-  <div class="grid">
+  <div class="grid" :class="{ 'grid--dense': dense }">
     <ProductCard v-for="p in products" :key="p._id" :product="p" class="grid__item" />
   </div>
 </template>
@@ -30,6 +31,35 @@ defineProps<{ products: Product[] }>()
 
     @include from('lg') {
       flex-basis: calc((100% - #{$gap} * 3) / 4);
+    }
+  }
+
+  &--dense {
+    gap: 1.25rem 0.6rem;
+  }
+
+  // Tarjetas chicas: precio y botón más compactos para que quepan en 3 columnas.
+  &--dense :deep(.card__price strong) {
+    font-size: 1.3rem;
+  }
+
+  &--dense :deep(.card__price span) {
+    display: none;
+  }
+
+  &--dense :deep(.card__add) {
+    width: 2.1rem;
+    height: 2.1rem;
+    font-size: 0.95rem;
+  }
+
+  &--dense &__item {
+    @include until('md') {
+      flex-basis: calc((100% - 1.2rem) / 3);
+    }
+
+    @include from('lg') {
+      flex-basis: calc((100% - #{$gap} * 5) / 6);
     }
   }
 }

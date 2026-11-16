@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import { useCartStore } from '@/stores/cart'
+import { lineKey, useCartStore } from '@/stores/cart'
 import { useSettingsStore } from '@/stores/settings'
 import { usePaymentMethod } from '@/composables/usePaymentMethod'
 import { copy } from '@/config/copy'
@@ -29,7 +29,7 @@ onMounted(() => settings.load())
 
     <div v-else class="cart__layout">
       <div class="cart__lines">
-        <CartLineItem v-for="line in cart.lines" :key="line.productId" :line="line" />
+        <CartLineItem v-for="line in cart.lines" :key="lineKey(line)" :line="line" />
         <RouterLink to="/tienda" class="cart__continue">
           <i class="fa-solid fa-arrow-left"></i> {{ copy.cart.continue }}
         </RouterLink>

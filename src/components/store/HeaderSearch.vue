@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { copy } from '@/config/copy'
+import { site } from '@/config/site'
 
 defineProps<{ dark?: boolean }>()
 const emit = defineEmits<{ done: [] }>()
@@ -9,6 +10,8 @@ const emit = defineEmits<{ done: [] }>()
 const route = useRoute()
 const router = useRouter()
 const term = ref('')
+// Hay dos buscadores en el header (móvil y escritorio): cada uno con su id.
+const inputId = `search-${Math.random().toString(36).slice(2, 8)}`
 
 watch(
   () => route.query.search,
@@ -25,13 +28,13 @@ function submit() {
 
 <template>
   <form class="search" role="search" @submit.prevent="submit">
-    <label for="header-search" class="visually-hidden">{{ copy.shop.searchLabel }}</label>
+    <label :for="inputId" class="visually-hidden">{{ copy.shop.searchLabel }}</label>
     <input
-      id="header-search"
+      :id="inputId"
       v-model="term"
       class="search__input"
       type="search"
-      :placeholder="copy.shop.searchPlaceholder"
+      :placeholder="site.searchPlaceholder"
       autocomplete="off"
     />
     <button class="search__btn" type="submit" :aria-label="copy.shop.searchLabel">
@@ -46,7 +49,7 @@ function submit() {
   width: 100%;
 
   &__input {
-    background: $sand;
+    background: $paper;
     border-color: transparent;
     border-radius: $radius-pill;
     padding: 0.6rem 2.8rem 0.6rem 1.1rem;

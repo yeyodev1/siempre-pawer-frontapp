@@ -20,10 +20,23 @@ export function useProductDetail() {
   const error = ref('')
   const notFound = ref(false)
   const qty = ref(1)
+  const size = ref('')
+  const color = ref('')
+  const added = ref(false)
 
   const slug = computed(() => route.params.slug as string)
   const soldOut = computed(() => (product.value?.stock ?? 0) <= 0)
   const related = computed(() => product.value?.related || [])
+  const variants = computed(() => product.value?.variants || [])
+  const sizes = computed(() => variants.value.map((v) => v.size).filter(Boolean))
+  const colors = computed(() => variants.value.find((v) => v.size === size.value)?.colors || [])
+  // Mismo formato que el backend ("8/10 · Negro"); así valida la combinación.
+  const variant = computed(() => [size.value, color.value].filter(Boolean).join(' · '))
+
+  // Al cambiar de talla se conserva el color si existe en la nueva; si no, el primero.
+  watch(size, () => {
+    if (!colors.value.includes(color.value)) color.value = colors.value[0] || ''
+  })
   const currentUnit = computed(() =>
     product.value ? unitPrice(product.value, method.value, qty.value, isDistributor.value) : 0,
   )
@@ -41,6 +54,8 @@ export function useProductDetail() {
     try {
       const data = await catalogService.product(slug.value)
       product.value = data
+      size.value = data.variants?.[0]?.size || ''
+      color.value = data.variants?.[0]?.colors?.[0] || ''
       document.title = `${data.name} — ${site.name}`
       analytics.viewContent(data, unitPrice(data, 'card', 1, isDistributor.value))
     } catch (e) {
@@ -54,10 +69,15 @@ export function useProductDetail() {
   }
 
   function addToCart() {
-    if (product.value) add(product.value, qty.value)
+    if (!product.value) return
+    add(product.value, qty.value, variant.value, true)
+    added.value = true
   }
 
   watch(slug, (value) => value && load(), { immediate: true })
 
-  return { product, loading, error, notFound, qty, soldOut, related, currentUnit, whatsapp, load, addToCart, isDistributor, method }
+  return {
+    product, loading, error, notFound, qty, soldOut, related, currentUnit, whatsapp, load, addToCart,
+    isDistributor, method, sizes, colors, size, color, variant, added,
+  }
 }

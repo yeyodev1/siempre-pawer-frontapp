@@ -16,18 +16,25 @@ const crud = useAdminCrud<Category, CategoryPayload>({
   create: (f) => adminService.createCategory(f),
   update: (id, f) => adminService.updateCategory(id, f),
   remove: (id) => adminService.deleteCategory(id),
-  blank: () => ({ name: '', slug: '', description: '', image: '', order: 0, isActive: true }),
+  blank: () => ({ name: '', slug: '', description: '', image: '', subcategories: [], order: 0, isActive: true }),
   toForm: (c) => ({
     name: c.name,
     slug: c.slug,
     description: c.description || '',
     image: c.image || '',
+    subcategories: [...(c.subcategories || [])],
     order: c.order || 0,
     isActive: c.isActive,
   }),
   validate: (f) => (f.name.trim() ? null : 'Escribe el nombre de la categoría'),
 })
 const { items, loading, saving, sheetOpen, editingId, form, toDelete } = crud
+
+// Una subcategoría por línea: es la forma más rápida de pegar el mapa del cliente.
+const subcategoriesText = computed({
+  get: () => (form.value.subcategories || []).join('\n'),
+  set: (text: string) => (form.value.subcategories = text.split('\n').map((s) => s.trim()).filter(Boolean)),
+})
 
 const sorted = computed(() => [...items.value].sort((a, b) => (a.order || 0) - (b.order || 0)))
 
@@ -64,7 +71,7 @@ onMounted(crud.load)
         <span v-else class="cats__img cats__img--empty"><i class="fa-solid fa-image"></i></span>
         <div class="cats__body">
           <strong>{{ c.name }}</strong>
-          <small class="adm-muted">/tienda/{{ c.slug }} · orden {{ c.order }}</small>
+          <small class="adm-muted">/tienda/{{ c.slug }} · orden {{ c.order }} · {{ c.subcategories?.length || 0 }} subcategorías</small>
           <span class="adm-chip" :class="{ 'adm-chip--on': c.isActive }">{{ c.isActive ? 'Activa' : 'Oculta' }}</span>
         </div>
         <div class="cats__tools">
@@ -97,7 +104,12 @@ onMounted(crud.load)
         <label for="c-desc">Descripción</label>
         <textarea id="c-desc" v-model="form.description" rows="3"></textarea>
       </div>
-      <AdminImageUploader v-model="imageList" label="Imagen" />
+      <div class="adm-field">
+        <label for="c-subs">Subcategorías</label>
+        <textarea id="c-subs" v-model.lazy="subcategoriesText" rows="6" placeholder="Balones N5&#10;Medias antideslizantes"></textarea>
+        <small>Una por línea. Son las pestañas de la categoría; en la tienda solo aparecen las que tienen productos.</small>
+      </div>
+      <AdminImageUploader v-model="imageList" label="Imagen (icono redondo en la portada)" />
       <div class="adm-field">
         <label for="c-order">Orden</label>
         <input id="c-order" v-model.number="form.order" type="number" inputmode="numeric" />

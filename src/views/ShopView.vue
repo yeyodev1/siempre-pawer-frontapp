@@ -1,55 +1,71 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { useShop } from '@/composables/useShop'
 import { copy } from '@/config/copy'
-import SectionHead from '@/components/store/SectionHead.vue'
 import ProductGrid from '@/components/store/ProductGrid.vue'
 import StateBlock from '@/components/store/StateBlock.vue'
 
 const {
-  products, categories, category, currentCategory, search, sort, total,
-  loading, loadingMore, error, hasMore, reload, loadMore, setSort,
+  products, categories, category, currentCategory, search, sub, sort, total,
+  loading, loadingMore, error, hasMore, reload, loadMore, setSort, setSub, setSearch,
 } = useShop()
+
+const term = ref('')
+watch(search, (value) => (term.value = value), { immediate: true })
 </script>
 
 <template>
   <div class="shop">
-    <header class="shop__head">
-      <SectionHead
-        as="h1"
-        :eyebrow="copy.shop.eyebrow"
-        :title="currentCategory?.name || copy.shop.title"
+    <nav class="shop__crumbs" aria-label="Ruta">
+      <RouterLink to="/">Inicio</RouterLink>
+      <span>/</span>
+      <RouterLink v-if="currentCategory" to="/tienda">{{ copy.shop.title }}</RouterLink>
+      <span v-if="currentCategory">/</span>
+      <span class="shop__crumb-current">{{ currentCategory?.name || copy.shop.title }}</span>
+    </nav>
+
+    <h1 class="shop__title">{{ currentCategory?.name || copy.shop.title }}</h1>
+
+    <form class="shop__search" role="search" @submit.prevent="setSearch(term)">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <label for="shop-search" class="visually-hidden">{{ copy.shop.searchLabel }}</label>
+      <input
+        id="shop-search"
+        v-model="term"
+        type="search"
+        autocomplete="off"
+        :placeholder="currentCategory ? `Buscar en ${currentCategory.name}` : copy.shop.searchPlaceholder"
+      />
+      <button v-if="search" type="button" class="shop__clear" aria-label="Quitar búsqueda" @click="setSearch('')">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </form>
+
+    <!-- Dentro de una categoría las pestañas son sus subcategorías; en la tienda, las categorías. -->
+    <nav v-if="currentCategory" class="shop__tabs" aria-label="Subcategorías">
+      <button type="button" class="tab" :class="{ 'tab--active': !sub }" @click="setSub('')">{{ copy.shop.all }}</button>
+      <button
+        v-for="s in currentCategory.subcategories || []"
+        :key="s"
+        type="button"
+        class="tab"
+        :class="{ 'tab--active': sub === s }"
+        @click="setSub(s)"
       >
-        <p v-if="search" class="shop__query">
-          {{ copy.shop.resultsFor }} <strong>"{{ search }}"</strong>
-          <RouterLink :to="{ query: {} }" class="shop__clear" aria-label="Quitar búsqueda">
-            <i class="fa-solid fa-xmark"></i>
-          </RouterLink>
-        </p>
-        <p v-else-if="currentCategory?.description" class="shop__desc">{{ currentCategory.description }}</p>
-      </SectionHead>
-    </header>
+        {{ s }}
+      </button>
+    </nav>
+    <nav v-else class="shop__tabs" aria-label="Categorías">
+      <RouterLink to="/tienda" class="tab" :class="{ 'tab--active': !category }">{{ copy.shop.all }}</RouterLink>
+      <RouterLink v-for="c in categories" :key="c._id" :to="`/tienda/${c.slug}`" class="tab">{{ c.name }}</RouterLink>
+    </nav>
 
     <div class="shop__bar">
-      <nav class="shop__chips" aria-label="Categorías">
-        <RouterLink to="/tienda" class="chip" :class="{ 'chip--active': !category }">{{ copy.shop.all }}</RouterLink>
-        <RouterLink
-          v-for="c in categories"
-          :key="c._id"
-          :to="`/tienda/${c.slug}`"
-          class="chip"
-          :class="{ 'chip--active': category === c.slug }"
-        >
-          {{ c.name }}
-        </RouterLink>
-      </nav>
-
-      <div class="shop__sort">
-        <span v-if="!loading && !error" class="shop__count">{{ total }} productos</span>
-        <label for="shop-sort" class="visually-hidden">{{ copy.shop.sortLabel }}</label>
-        <select id="shop-sort" :value="sort" @change="setSort(($event.target as HTMLSelectElement).value)">
-          <option v-for="o in copy.shop.sort" :key="o.value" :value="o.value">{{ o.label }}</option>
-        </select>
-      </div>
+      <span v-if="!loading && !error" class="shop__count">{{ total }} productos</span>
+      <label for="shop-sort" class="visually-hidden">{{ copy.shop.sortLabel }}</label>
+      <select id="shop-sort" :value="sort" @change="setSort(($event.target as HTMLSelectElement).value)">
+        <option v-for="o in copy.shop.sort" :key="o.value" :value="o.value">{{ o.label }}</option>
+      </select>
     </div>
 
     <div class="shop__body">
@@ -72,61 +88,84 @@ const {
 <style scoped lang="scss">
 .shop {
   @include container(1280px);
-  padding-block: 2rem $space-xl;
+  padding-block: 1.25rem $space-xl;
 
-  &__head {
-    padding-bottom: 1.5rem;
+  &__crumbs {
+    @include flex(row, center, flex-start, 0.4rem);
+    font-size: $text-sm;
+    color: $ink-muted;
+
+    a:hover {
+      color: $ink;
+    }
   }
 
-  &__query,
-  &__desc {
-    color: $ink-soft;
-    @include flex(row, center, flex-start, 0.5rem);
+  &__crumb-current {
+    color: $ink;
+    font-weight: 600;
+  }
+
+  &__title {
+    font-family: $font-display;
+    font-weight: 400;
+    font-style: italic;
+    font-size: clamp(2.6rem, 2rem + 3vw, 4.5rem);
+    line-height: 1;
+    text-transform: uppercase;
+    margin-block: 0.4rem 0.9rem;
+  }
+
+  &__search {
+    position: relative;
+    max-width: 560px;
+
+    > i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $ink-muted;
+    }
+
+    input {
+      background: $sand;
+      border-color: transparent;
+      border-radius: $radius-pill;
+      padding: 0.7rem 2.8rem;
+    }
   }
 
   &__clear {
-    width: 1.6rem;
-    height: 1.6rem;
+    position: absolute;
+    right: 0.4rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2rem;
+    height: 2rem;
     border-radius: 50%;
-    background: $sand;
     @include flex(row, center, center);
-    font-size: 0.75rem;
+  }
+
+  &__tabs {
+    @include flex(row, stretch, flex-start, 1.4rem);
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid $line;
+    margin-top: 1.1rem;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   &__bar {
-    @include flex(column, stretch, flex-start, 1rem);
-    border-block: 1px solid $line;
-    padding-block: 0.9rem;
-    margin-bottom: 1.75rem;
-
-    @include from('md') {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-    }
-  }
-
-  &__chips {
-    @include flex(row, center, flex-start, 0.5rem);
-    overflow-x: auto;
-    scrollbar-width: none;
-    margin-inline: -1.25rem;
-    padding-inline: 1.25rem;
-
-    @include from('md') {
-      flex-wrap: wrap;
-      margin: 0;
-      padding: 0;
-    }
-  }
-
-  &__sort {
     @include flex(row, center, space-between, 0.75rem);
-    flex-shrink: 0;
+    padding-block: 0.9rem 1.25rem;
 
     select {
       width: auto;
-      padding-block: 0.5rem;
+      margin-left: auto;
+      padding-block: 0.45rem;
       font-family: $font-condensed;
       font-weight: 600;
     }
@@ -149,27 +188,27 @@ const {
   }
 }
 
-.chip {
+// Pestañas subrayadas, como el filtro de categorías de una app de delivery.
+.tab {
   flex-shrink: 0;
   font-family: $font-condensed;
   font-weight: 700;
-  font-size: 0.92rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 0.45rem 1rem;
-  border: 1.5px solid $ink;
-  border-radius: 4px;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
   white-space: nowrap;
+  padding: 0.6rem 0 0.55rem;
+  color: $ink-muted;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
   @include transition;
 
   &:hover {
-    background: $sand;
+    color: $ink;
   }
 
-  &--active,
-  &--active:hover {
-    background: $ink;
-    color: $accent;
+  &--active {
+    color: $ink;
+    border-bottom-color: $accent;
   }
 }
 </style>

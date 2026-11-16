@@ -32,7 +32,7 @@ export function useCheckout() {
   const payphoneConfig = ref<PayphoneBoxConfig | null>(null)
   const pendingOrder = ref<Order | null>(null)
 
-  const items = computed(() => cart.lines.map((l) => ({ productId: l.productId, qty: l.qty })))
+  const items = computed(() => cart.lines.map((l) => ({ productId: l.productId, qty: l.qty, variant: l.variant || '' })))
   const quoteKey = computed(() =>
     JSON.stringify([items.value, method.value, coupon.value?.code, shipping.method]),
   )

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { copy } from '@/config/copy'
 import { money } from '@/utils/format'
-import { useCartStore } from '@/stores/cart'
+import { lineKey, useCartStore } from '@/stores/cart'
 import { usePaymentMethod } from '@/composables/usePaymentMethod'
 import { unitPrice } from '@/utils/pricing'
 import QtyStepper from './QtyStepper.vue'
@@ -16,7 +16,7 @@ const { method, isDistributor } = usePaymentMethod()
 const unit = computed(() => unitPrice(props.line, method.value, props.line.qty, isDistributor.value))
 const qty = computed({
   get: () => props.line.qty,
-  set: (value: number) => cart.setQty(props.line.productId, value),
+  set: (value: number) => cart.setQty(lineKey(props.line), value),
 })
 </script>
 
@@ -29,10 +29,11 @@ const qty = computed({
     <div class="line__body">
       <div class="line__top">
         <RouterLink :to="`/producto/${line.slug}`" class="line__name">{{ line.name }}</RouterLink>
-        <button class="line__remove" type="button" :aria-label="`${copy.cart.remove} ${line.name}`" @click="cart.remove(line.productId)">
+        <button class="line__remove" type="button" :aria-label="`${copy.cart.remove} ${line.name}`" @click="cart.remove(lineKey(line))">
           <i class="fa-solid fa-trash-can"></i>
         </button>
       </div>
+      <p v-if="line.variant" class="line__variant">{{ line.variant }}</p>
       <p class="line__unit">{{ money(unit) }} {{ copy.cart.each }}</p>
       <div class="line__bottom">
         <QtyStepper v-model="qty" :max="line.stock" small />
@@ -43,6 +44,11 @@ const qty = computed({
 </template>
 
 <style scoped lang="scss">
+.line__variant {
+  font-size: $text-sm;
+  font-weight: 600;
+}
+
 .line {
   @include flex(row, stretch, flex-start, 0.9rem);
   padding-block: 1rem;

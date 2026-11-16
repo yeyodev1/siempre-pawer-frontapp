@@ -13,12 +13,13 @@ defineProps<{ order: Order }>()
     </h2>
 
     <ul class="items">
-      <li v-for="item in order.items" :key="item.product + item.name" class="items__row">
+      <li v-for="item in order.items" :key="item.product + item.name + (item.variant || '')" class="items__row">
         <img :src="item.image" alt="" class="adm-thumb" />
         <div class="items__text">
           <RouterLink :to="{ name: 'AdminProductEdit', params: { id: item.product } }" class="items__name">
             {{ item.name }}
           </RouterLink>
+          <strong v-if="item.variant">{{ item.variant }}</strong>
           <span class="adm-muted">{{ item.qty }} x {{ cents(item.unitPrice) }}</span>
         </div>
         <strong class="items__price">{{ cents(item.lineTotal) }}</strong>

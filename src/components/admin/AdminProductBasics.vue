@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { Category } from '@/types'
 import type { ProductPayload } from '@/services/admin.service'
 
 const form = defineModel<ProductPayload>({ required: true })
 const slugTouched = defineModel<boolean>('slugTouched', { default: false })
-defineProps<{ categories: Category[] }>()
+const props = defineProps<{ categories: Category[] }>()
+
+const subcategories = computed(
+  () => props.categories.find((c) => c._id === form.value.category)?.subcategories || [],
+)
 </script>
 
 <template>
@@ -32,6 +37,17 @@ defineProps<{ categories: Category[] }>()
           <option :value="null">Sin categoría</option>
           <option v-for="c in categories" :key="c._id" :value="c._id">{{ c.name }}</option>
         </select>
+      </div>
+      <div v-if="subcategories.length || form.subcategory" class="adm-field">
+        <label for="p-sub">Subcategoría</label>
+        <select id="p-sub" v-model="form.subcategory">
+          <option value="">Sin subcategoría</option>
+          <option v-if="form.subcategory && !subcategories.includes(form.subcategory)" :value="form.subcategory">
+            {{ form.subcategory }}
+          </option>
+          <option v-for="s in subcategories" :key="s" :value="s">{{ s }}</option>
+        </select>
+        <small>Es la pestaña donde aparece dentro de la categoría.</small>
       </div>
       <div class="adm-field">
         <label for="p-short">Descripción corta</label>

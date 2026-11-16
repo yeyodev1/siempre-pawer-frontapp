@@ -10,11 +10,12 @@ const t = copy.checkout
 <template>
   <div class="lines">
     <ul class="lines__list">
-      <li v-for="item in order.items" :key="item.product + item.name" class="lines__item">
+      <li v-for="item in order.items" :key="item.product + item.name + (item.variant || '')" class="lines__item">
         <span class="lines__thumb"><img v-if="item.image" :src="item.image" :alt="''" /></span>
         <span class="lines__name">
           <RouterLink v-if="item.slug" :to="`/producto/${item.slug}`">{{ item.name }}</RouterLink>
           <template v-else>{{ item.name }}</template>
+          <small v-if="item.variant">{{ item.variant }}</small>
           <small>{{ item.qty }} x {{ money(item.unitPrice) }}</small>
         </span>
         <strong>{{ money(item.lineTotal) }}</strong>

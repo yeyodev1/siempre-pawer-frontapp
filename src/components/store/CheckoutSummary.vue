@@ -24,8 +24,8 @@ const t = copy.checkout
 // Mientras llega la cotización se muestran las líneas del carrito.
 const lines = computed(() =>
   props.quote?.items.length
-    ? props.quote.items.map((i) => ({ id: i.productId, name: i.name, image: i.image, qty: i.qty, total: i.lineTotal }))
-    : cart.lines.map((l) => ({ id: l.productId, name: l.name, image: l.image, qty: l.qty, total: cart.lineUnit(l, isDistributor.value) * l.qty })),
+    ? props.quote.items.map((i) => ({ id: i.productId + (i.variant || ''), name: i.variant ? `${i.name} (${i.variant})` : i.name, image: i.image, qty: i.qty, total: i.lineTotal }))
+    : cart.lines.map((l) => ({ id: l.productId + (l.variant || ''), name: l.variant ? `${l.name} (${l.variant})` : l.name, image: l.image, qty: l.qty, total: cart.lineUnit(l, isDistributor.value) * l.qty })),
 )
 </script>
 

@@ -22,6 +22,7 @@ export function useShop() {
 
   const category = computed(() => (route.params.category as string) || '')
   const search = computed(() => (typeof route.query.search === 'string' ? route.query.search : ''))
+  const sub = computed(() => (typeof route.query.sub === 'string' ? route.query.sub : ''))
   const sort = computed<Sort>(() => {
     const value = route.query.sort
     return value === 'price_asc' || value === 'price_desc' ? value : 'newest'
@@ -36,6 +37,7 @@ export function useShop() {
     const id = ++request
     const query: ProductQuery = {
       category: category.value || undefined,
+      sub: (category.value && sub.value) || undefined,
       search: search.value || undefined,
       sort: sort.value,
       page: next,
@@ -78,11 +80,19 @@ export function useShop() {
     router.replace({ query: { ...route.query, sort: value === 'newest' ? undefined : value } })
   }
 
-  watch([category, search, sort], reload, { immediate: true })
+  function setSub(value: string) {
+    router.replace({ query: { ...route.query, sub: value || undefined } })
+  }
+
+  function setSearch(value: string) {
+    router.replace({ query: { ...route.query, search: value.trim() || undefined } })
+  }
+
+  watch([category, sub, search, sort], reload, { immediate: true })
   loadCategories()
 
   return {
-    products, categories, category, currentCategory, search, sort, total,
-    loading, loadingMore, error, hasMore, reload, loadMore, setSort,
+    products, categories, category, currentCategory, search, sub, sort, total,
+    loading, loadingMore, error, hasMore, reload, loadMore, setSort, setSub, setSearch,
   }
 }

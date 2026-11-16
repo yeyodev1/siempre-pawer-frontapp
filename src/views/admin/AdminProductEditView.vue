@@ -9,6 +9,7 @@ import AdminProductPrices from '@/components/admin/AdminProductPrices.vue'
 import AdminImageUploader from '@/components/admin/AdminImageUploader.vue'
 import AdminTiersEditor from '@/components/admin/AdminTiersEditor.vue'
 import AdminListEditor from '@/components/admin/AdminListEditor.vue'
+import AdminVariantsEditor from '@/components/admin/AdminVariantsEditor.vue'
 import AdminSpecsEditor from '@/components/admin/AdminSpecsEditor.vue'
 import AdminSwitch from '@/components/admin/AdminSwitch.vue'
 
@@ -46,6 +47,11 @@ onMounted(load)
         </article>
 
         <AdminProductPrices v-model="form" :warning="priceWarning" />
+
+        <article class="adm-card">
+          <h2 class="adm-card__title">Opciones <i class="fa-solid fa-shirt"></i></h2>
+          <AdminVariantsEditor v-model="form.variants" />
+        </article>
 
         <article class="adm-card">
           <h2 class="adm-card__title">Descuento por volumen <i class="fa-solid fa-boxes-stacked"></i></h2>

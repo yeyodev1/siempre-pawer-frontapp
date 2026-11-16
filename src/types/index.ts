@@ -41,8 +41,16 @@ export interface Category {
   slug: string
   description?: string
   image?: string
+  // Público: solo las que tienen productos. Admin: el mapa completo.
+  subcategories?: string[]
+  productCount?: number
   order: number
   isActive: boolean
+}
+
+export interface ProductVariant {
+  size: string
+  colors: string[]
 }
 
 export interface ProductPrices {
@@ -67,6 +75,8 @@ export interface Product {
   slug: string
   sku?: string
   category?: Category | string | null
+  subcategory?: string
+  variants?: ProductVariant[]
   shortDescription?: string
   description?: string
   features: string[]
@@ -115,12 +125,15 @@ export interface CartLine {
   volumeTiers: VolumeTier[]
   stock: number
   qty: number
+  // "8/10 · Negro"; vacío si el producto no tiene tallas ni colores.
+  variant?: string
 }
 
 export interface QuoteItem {
   productId: string
   name: string
   image: string
+  variant?: string
   qty: number
   unitPrice: number
   lineTotal: number
@@ -166,6 +179,7 @@ export interface OrderItem {
   name: string
   slug: string
   image: string
+  variant?: string
   qty: number
   unitPrice: number
   lineTotal: number
@@ -202,7 +216,7 @@ export interface Order {
 }
 
 export interface CreateOrderPayload {
-  items: { productId: string; qty: number }[]
+  items: { productId: string; qty: number; variant?: string }[]
   paymentMethod: PaymentMethod
   couponCode?: string
   customer: OrderCustomer
@@ -257,6 +271,20 @@ export interface Distributor {
 
 export interface AdminSettings extends Omit<PublicSettings, 'payphoneEnabled'> {
   payphoneEnabled?: boolean
+}
+
+export interface SchoolQuote {
+  _id: string
+  name: string
+  institution: string
+  email: string
+  phone: string
+  city: string
+  notes: string
+  items: { product: string; name: string; qty: number }[]
+  fileUrl: string
+  status: 'new' | 'answered'
+  createdAt: string
 }
 
 export interface AdminStats {

@@ -9,11 +9,15 @@ import ProductPricing from '@/components/store/ProductPricing.vue'
 import ProductDetails from '@/components/store/ProductDetails.vue'
 import ProductGrid from '@/components/store/ProductGrid.vue'
 import QtyStepper from '@/components/store/QtyStepper.vue'
+import VariantPicker from '@/components/store/VariantPicker.vue'
+import AddedSheet from '@/components/store/AddedSheet.vue'
 import SectionHead from '@/components/store/SectionHead.vue'
 import StateBlock from '@/components/store/StateBlock.vue'
 
-const { product, loading, error, notFound, qty, soldOut, related, currentUnit, whatsapp, load, addToCart, isDistributor, method } =
-  useProductDetail()
+const {
+  product, loading, error, notFound, qty, soldOut, related, currentUnit, whatsapp, load, addToCart,
+  isDistributor, method, sizes, colors, size, color, variant, added,
+} = useProductDetail()
 
 const categoryName = computed(() => {
   const c = product.value?.category
@@ -40,6 +44,10 @@ const stockLabel = computed(() => {
         <template v-if="categoryName">
           <i class="fa-solid fa-chevron-right"></i>
           <RouterLink :to="`/tienda/${categoryName.slug}`">{{ categoryName.name }}</RouterLink>
+          <template v-if="product.subcategory">
+            <i class="fa-solid fa-chevron-right"></i>
+            <RouterLink :to="{ path: `/tienda/${categoryName.slug}`, query: { sub: product.subcategory } }">{{ product.subcategory }}</RouterLink>
+          </template>
         </template>
       </nav>
 
@@ -56,6 +64,8 @@ const stockLabel = computed(() => {
           <p class="pdp__stock" :class="{ 'pdp__stock--out': soldOut }">
             <i :class="soldOut ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-check'"></i> {{ stockLabel }}
           </p>
+
+          <VariantPicker v-if="sizes.length || colors.length" v-model:size="size" v-model:color="color" :sizes="sizes" :colors="colors" />
 
           <div class="pdp__actions">
             <div class="pdp__qty">
@@ -77,6 +87,16 @@ const stockLabel = computed(() => {
       </div>
 
       <ProductDetails class="pdp__details" :product="product" />
+
+      <AddedSheet
+        :open="added"
+        :product="product"
+        :qty="qty"
+        :variant="variant"
+        :unit="currentUnit"
+        :related="related"
+        @close="added = false"
+      />
 
       <section v-if="related.length" class="pdp__related">
         <SectionHead :title="copy.product.related" />
@@ -146,6 +166,7 @@ const stockLabel = computed(() => {
   &__name {
     font-family: $font-display;
     font-weight: 400;
+    font-style: italic;
     font-size: clamp(2.4rem, 1.8rem + 2.5vw, 3.8rem);
     line-height: 0.92;
     text-transform: uppercase;

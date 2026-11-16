@@ -17,6 +17,8 @@ const isDistributorPrice = computed(() => isDistributor.value && Boolean(props.p
 const price = computed(() => unitPrice(props.product, bestMethod.value, 1, isDistributor.value))
 const image = computed(() => props.product.images?.[0] || '')
 const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
+// Con talla o color hay que elegir en el detalle antes de agregar.
+const hasOptions = computed(() => (props.product.variants?.length || 0) > 0)
 </script>
 
 <template>
@@ -38,14 +40,20 @@ const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
           <span>{{ isDistributorPrice ? copy.product.distributorLabel : copy.product.fromLabel[bestMethod] }}</span>
         </div>
         <button
+          v-if="!hasOptions"
           class="card__add"
           type="button"
           :disabled="soldOut"
           :aria-label="`${copy.product.add}: ${product.name}`"
           @click="add(product)"
         >
-          <i class="fa-solid fa-bag-shopping"></i>
+          <i class="fa-solid fa-plus"></i>
         </button>
+      </div>
+      <RouterLink v-if="hasOptions && !soldOut" :to="`/producto/${product.slug}`" class="card__options">
+        {{ copy.product.seeOptions }}
+      </RouterLink>
+      <div>
       </div>
       <s v-if="product.compareAtPrice && product.compareAtPrice > price" class="card__compare">
         {{ money(product.compareAtPrice) }}
@@ -65,6 +73,7 @@ const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
     display: block;
     aspect-ratio: 1;
     background: $sand;
+    border-radius: 10px;
     overflow: hidden;
     @include flex(row, center, center);
 
@@ -149,6 +158,19 @@ const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
     }
   }
 
+  &__options {
+    background: $ink;
+    color: $paper;
+    text-align: center;
+    font-family: $font-condensed;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.45rem;
+    border-radius: 6px;
+  }
+
   &__compare {
     font-size: $text-xs;
     color: $ink-muted;
@@ -158,15 +180,16 @@ const hasTiers = computed(() => (props.product.volumeTiers?.length || 0) > 0)
     width: 2.6rem;
     height: 2.6rem;
     flex-shrink: 0;
-    border-radius: 4px;
-    background: $ink;
-    color: $paper;
+    border-radius: 50%;
+    background: $accent;
+    color: $on-accent;
+    font-size: 1.1rem;
     @include flex(row, center, center);
     @include transition;
 
     &:hover:not(:disabled) {
-      background: $accent;
-      color: $on-accent;
+      background: $ink;
+      color: $accent;
     }
 
     &:disabled {

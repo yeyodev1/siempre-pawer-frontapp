@@ -20,7 +20,7 @@ const { bestMethod } = usePaymentMethod()
           <RouterLink to="/tienda" class="btn btn--primary btn--sport btn--lg">
             {{ site.hero.cta }} <i class="fa-solid fa-arrow-right"></i>
           </RouterLink>
-          <RouterLink to="/distribuidores" class="btn btn--light btn--sport btn--lg">
+          <RouterLink to="/cotizar" class="btn btn--light btn--sport btn--lg">
             {{ site.hero.ctaSecondary }}
           </RouterLink>
         </div>
@@ -52,8 +52,8 @@ const { bestMethod } = usePaymentMethod()
 
   &__inner {
     @include container(1280px);
-    @include flex(column, stretch, flex-start, 2rem);
-    padding-block: 2.5rem 3rem;
+    @include flex(column, stretch, flex-start, 1.25rem);
+    padding-block: 1.75rem 1.5rem;
 
     @include from('md') {
       flex-direction: row;
@@ -82,7 +82,8 @@ const { bestMethod } = usePaymentMethod()
     font-family: $font-display;
     font-weight: 400;
     text-transform: uppercase;
-    font-size: clamp(3.4rem, 2rem + 7vw, 7.5rem);
+    font-style: italic;
+    font-size: clamp(3rem, 2rem + 7vw, 7.5rem);
     line-height: 0.86;
     letter-spacing: 0.005em;
     max-width: 9ch;
@@ -92,6 +93,10 @@ const { bestMethod } = usePaymentMethod()
     color: rgba($paper, 0.72);
     max-width: 44ch;
     font-size: $text-lg;
+
+    @include until('md') {
+      display: none;
+    }
   }
 
   &__actions {
@@ -100,11 +105,17 @@ const { bestMethod } = usePaymentMethod()
     margin-top: 0.5rem;
   }
 
+  // En el celular el banner es corto, como el de la referencia: solo título y botones.
   &__visual {
     position: relative;
     flex: 1 1 45%;
-    min-height: 300px;
+    min-height: 220px;
     @include flex(row, center, center);
+
+    // Va después del flex: Sass emite las declaraciones posteriores en otro bloque.
+    @include until('md') {
+      display: none;
+    }
 
     @include from('md') {
       min-height: 480px;
@@ -123,7 +134,7 @@ const { bestMethod } = usePaymentMethod()
 
   &__product {
     position: relative;
-    width: min(82%, 420px);
+    width: min(62%, 420px);
     aspect-ratio: 1;
     border-radius: 50%;
     background: $paper;

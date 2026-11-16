@@ -8,6 +8,7 @@ import type {
   Order,
   OrderStatus,
   Paginated,
+  SchoolQuote,
   Product,
 } from '@/types'
 
@@ -60,6 +61,14 @@ class AdminService extends APIBase {
   }
 
   // Pedidos
+  async schoolQuotes(status = ''): Promise<Paginated<SchoolQuote>> {
+    return (await this.get<Paginated<SchoolQuote>>(`admin/school-quotes${qs({ status, limit: 100 })}`)).data
+  }
+
+  async setSchoolQuoteStatus(id: string, status: SchoolQuote['status']): Promise<SchoolQuote> {
+    return (await this.patch<SchoolQuote>(`admin/school-quotes/${id}`, { status })).data
+  }
+
   async orders(query: AdminOrderQuery = {}): Promise<Paginated<Order>> {
     return (await this.get<Paginated<Order>>(`admin/orders${qs(query)}`)).data
   }

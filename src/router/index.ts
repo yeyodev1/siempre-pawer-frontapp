@@ -7,7 +7,13 @@ const routes: Array<RouteRecordRaw> = [
     path: '/',
     name: 'Home',
     component: () => import('@/views/HomeView.vue'),
-    meta: { title: site.name },
+    meta: { title: site.seoTitle },
+  },
+  {
+    path: '/cotizar',
+    name: 'SchoolQuote',
+    component: () => import('@/views/SchoolQuoteView.vue'),
+    meta: { title: 'Cotiza para tu colegio' },
   },
   {
     path: '/tienda',
@@ -104,6 +110,12 @@ const routes: Array<RouteRecordRaw> = [
         name: 'AdminOrderDetail',
         component: () => import('@/views/admin/AdminOrderDetailView.vue'),
         meta: { title: 'Pedido' },
+      },
+      {
+        path: 'cotizaciones',
+        name: 'AdminSchoolQuotes',
+        component: () => import('@/views/admin/AdminSchoolQuotesView.vue'),
+        meta: { title: 'Cotizaciones' },
       },
       {
         path: 'productos',
@@ -204,7 +216,7 @@ router.beforeEach(async (to) => {
 
 router.afterEach((to) => {
   const title = to.meta.title as string | undefined
-  document.title = title && title !== site.name ? `${title} — ${site.name}` : site.name
+  document.title = !title ? site.seoTitle : title === site.seoTitle ? title : `${title} — ${site.name}`
 })
 
 export default router

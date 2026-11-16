@@ -9,7 +9,7 @@ import type {
 } from '@/types'
 
 export interface QuotePayload {
-  items: { productId: string; qty: number }[]
+  items: { productId: string; qty: number; variant?: string }[]
   paymentMethod: PaymentMethod
   couponCode?: string
   shippingMethod: ShippingMethod

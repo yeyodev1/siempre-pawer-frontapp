@@ -9,6 +9,7 @@ export interface AdminNavItem {
 export const adminNav: AdminNavItem[] = [
   { name: 'AdminDashboard', label: 'Panel', short: 'Panel', icon: 'fa-solid fa-gauge-high' },
   { name: 'AdminOrders', label: 'Pedidos', short: 'Pedidos', icon: 'fa-solid fa-receipt' },
+  { name: 'AdminSchoolQuotes', label: 'Cotizaciones', short: 'Cotiz.', icon: 'fa-solid fa-clipboard-list' },
   { name: 'AdminProducts', label: 'Productos', short: 'Productos', icon: 'fa-solid fa-futbol' },
   { name: 'AdminCategories', label: 'Categorías', short: 'Categorías', icon: 'fa-solid fa-layer-group' },
   { name: 'AdminCoupons', label: 'Cupones e influencers', short: 'Cupones', icon: 'fa-solid fa-ticket' },

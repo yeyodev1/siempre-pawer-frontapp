@@ -12,11 +12,12 @@ export function useAddToCart() {
   const analytics = useAnalytics()
   const { method, isDistributor } = usePaymentMethod()
 
-  function add(product: Product, qty = 1) {
+  // silent: el detalle de producto muestra su propio panel en vez del toast.
+  function add(product: Product, qty = 1, variant = '', silent = false) {
     if (product.stock <= 0) return
-    cart.add(product, qty)
+    cart.add(product, qty, variant)
     analytics.addToCart(product, qty, unitPrice(product, method.value, qty, isDistributor.value))
-    toast.success(copy.product.added)
+    if (!silent) toast.success(copy.product.added)
   }
 
   return { add }
